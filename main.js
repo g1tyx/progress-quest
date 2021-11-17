@@ -1118,7 +1118,7 @@ function FormKeyDown(e) {
     alert("Your character's genome is " + ToDna(game.dna + ""));
   }
 
-  if (game.isonline) {
+  if (game.online) {
     if (key === 'b') {
       Brag('brag');
       //Navigate(GetHostAddr() + 'name=' + UrlEncode(Get(Traits,'Name')));
@@ -1176,7 +1176,7 @@ function LFSR(pt, salt) {
 
 function Brag(trigger) {
   SaveGame();
-  if (game.isonline) {
+  if (game.online) {
     game.bragtrigger = trigger;
     $.post("webrag.php", game, function (data, textStatus, request) {
       if (data.alert)

@@ -1,6 +1,7 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
+<meta charset="utf-8"/>
 <link rel="shortcut icon" type="image/x-icon" href="http://progressquest.com/favicon.ico">
 <title>Progress Quest - Roster</title>
 <script src="json2.js"></script>
@@ -31,6 +32,11 @@ div.bs {
   font-size: 7pt;
 }
 
+.online {
+  background-color: #ddffdd;
+  border-color: #66eecc;
+}
+
 body {
   text-align: center;
 }
@@ -40,7 +46,7 @@ p {
   margin-right: 10%;
   text-align: left;
 }
-#newc {
+#newc, #newm {
   text-align: center;
 }
 .brag a, .brag a:visited {
@@ -85,13 +91,12 @@ img {
 <table class="brag">
   <tr>
     <td id="newc">
-      <b>New Character</b> <br>
+      <b>New Character</b><br>
       <img src="dicebar.jpg"><br>
       <button id="roll">Roll One Up</button>
     </td>
   </tr>
 </table>
-
 
 <br>
 <br>
