@@ -17,6 +17,8 @@ thead.mid {
 }
 
 
+th { background-color: #eee; }
+
 .head {
   font-weight: bold;
   font-size: 9pt;
