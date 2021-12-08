@@ -79,6 +79,10 @@ $(document).ready(function () {
     window.location = "newguy.html";
   });
 
+  $("#roll").click(function () {
+    window.location = "newguy.html?online";
+  });
+
   $("#test").click(function () {
     window.location = "newguy.html?sold";
   });

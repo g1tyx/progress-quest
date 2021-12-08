@@ -962,7 +962,7 @@ function FormCreate() {
         return "Are you sure you want to quit? All your progress will be lost!";
     });
 
-    $(window).unload(function (event) {
+    $(window).on('unload', function (event) {
       StopTimer();
       SaveGame();
       if (storage.async) {
@@ -1075,8 +1075,8 @@ function LoadGame(sheet) {
 function GameSaveName() {
   if (!game.saveName) {
     game.saveName = Get(Traits, 'Name');
-    if (game.realm)
-      game.saveName += ' [' + game.realm + ']';
+    if (game.online)
+      game.saveName += ' [' + game.online.realm + ']';
   }
   return game.saveName;
 }
@@ -1121,11 +1121,11 @@ function FormKeyDown(e) {
   if (game.online) {
     if (key === 'b') {
       Brag('brag');
-      //Navigate(GetHostAddr() + 'name=' + UrlEncode(Get(Traits,'Name')));
+      // Navigate(game.online.host + 'name=' + UrlEncode(Get(Traits,'Name')));
     }
 
     if (key === 'g') {
-      game.guild = InputBox('Choose a guild.\r\rMake sure you undestand the guild rules before you join one. To learn more about guilds, visit http://progressquest.com/guilds.php', game.guild);
+      game.guild = InputBox('Choose a guild.\n\nMake sure you undestand the guild rules before you join one. To learn more about guilds, visit http://progressquest.com/guilds.php\n', game.guild);
       Brag("guild");
     }
 
@@ -1168,20 +1168,41 @@ function Navigate(url) {
 function LFSR(pt, salt) {
   var result = salt;
   for (var k = 1; k <= Length(pt); ++k)
-    result = Ord(pt[k]) ^ (result << 1) ^ (1 && ((result >> 31) ^ (result >> 5)));
+    result = pt.charCodeAt(k) ^ (result << 1) ^ (1 && ((result >> 31) ^ (result >> 5)));
   for (var kk = 1; kk <= 10; ++kk)
     result = (result << 1) ^ (1 && ((result >> 31) ^ (result >> 5)));
+  return result;
 }
-
 
 function Brag(trigger) {
   SaveGame();
+
   if (game.online) {
-    game.bragtrigger = trigger;
-    $.post("webrag.php", game, function (data, textStatus, request) {
-      if (data.alert)
-        alert(data.alert);
-    }, "json");
+    // game.bragtrigger = trigger;
+    // $.post("webrag.php", game, function (data, textStatus, request) {
+    //   if (data.alert)
+    //     alert(data.alert);
+    // }, "json");
+
+    let url = game.online.host + 'cmd=b&t=' + trigger;
+    for (trait in game.Traits) {
+      url += '&' + LowerCase(trait.substr(0,1)) + '=' + UrlEncode(game.Traits[trait]);
+    }
+    url += '&x=' + IntToStr(ExpBar.Position());
+    url += '&i=' + UrlEncode(game.bestequip);
+    url += '&z=' + UrlEncode(game.bestspell);
+    url += '&k=' + UrlEncode(game.beststat);
+
+    url += '&a=' + UrlEncode(game.bestplot);
+    url += '&h=' + UrlEncode(game.online.realm);
+    url += RevString;
+    url += '&p=' + IntToStr(LFSR(url, game.online.passkey));
+    url += '&m=' + UrlEncode(game.motto || '');
+    $.ajax(url)
+    .then(body => {
+      if (LowerCase(Split(body,0)) = 'report') {
+        ShowMessage(Split(body,1));
+      }
+    });
   }
 }
-

@@ -34,11 +34,6 @@ input, button { display: inline; }
     Name
     <input id="Name" spellcheck="false">
     <button id="RandomName">?</button>
-    <!--
-      <span style="float:right;padding-right:20px">
-        <input type="checkbox" checked id="multiplayer"/><label for="multiplayer">Play online</label>
-       </span>
-     -->
   </div>
 
   <div class=hbox>
@@ -53,7 +48,8 @@ input, button { display: inline; }
           <legend>Class</legend>
         </fieldset>
 
-        <fieldset class="vbox groupbox" id="stats">
+        <div class="vbox">
+        <fieldset class="groupbox" id="stats">
           <legend>Stats</legend>
 
           <table>
@@ -70,9 +66,6 @@ input, button { display: inline; }
           <br>
           <br>
           <br>
-          <br>
-          <br>
-          <br>
 
           <center>
             <button id="Reroll">Roll</button> <br>
@@ -81,11 +74,25 @@ input, button { display: inline; }
           <br>
 
         </fieldset>
+
+        <fieldset class="groupbox" id="gametype">
+          <legend>Game Type</legend>
+            <div><input type=radio id=single name=online value=false checked/>
+                 <label for=single>Single player</label></div>
+            <div><input type=radio id=multiplayer name=online value=true/>
+                 <label for=multiplayer>Mulitplayer</label></div>
+        </fieldset>
       </div>
 
+      </div>
+
+      <div class=hbox>
+      </div>
 
       <div class=hbox style="text-align:right;padding-top:15px">
-      <button id=Sold>Sold!</button>
+
+
+        <button id=Sold>Sold!</button>
       </div>
     </div>
   </div>

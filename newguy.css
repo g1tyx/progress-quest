@@ -42,12 +42,19 @@ fieldset table td {
   width: 185px;
 }
 
-#races, #classes, #stats {
+#races, #classes {
   height: 372px;
 }
 
-#stats {
+#stats, #gametype {
   width: 109px;
+}
+#stats {
+  height: 308px;
+}
+#gametype {
+  margin-top: 4px;
+  height: 58px;
 }
 
 .window#newguy .vbox button {

@@ -234,6 +234,10 @@ function SqlStorage() {
   };
 }
 
+function UrlEncode(s) {
+  return encodeURIComponent(s).replace(/%20/g, "+");
+}
+
 var iPad = navigator.userAgent.match(/iPad/);
 var iPod = navigator.userAgent.match(/iPod/);
 var iPhone = navigator.userAgent.match(/iPhone/);
@@ -307,6 +311,13 @@ function LevelUpTime(level) {  // seconds
   return Math.round((20 + Math.pow(1.15, level)) * 60);
 }
 
+
+let RevString = '&rev=6';
+// Rev strings known to server, probably:
+// rev=3 is the minimum allowed by server, probably pq6.1
+// rev=4 is pq6.2 the longstanding delphi client
+// rev=5 is pq6.3 presumably the lazarus port or other unofficial release
+// rev=6 is this here, pq-web multiplayer enabled
 
 var K = {};
 

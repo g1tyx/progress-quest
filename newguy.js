@@ -108,53 +108,6 @@ function NewGuyFormLoad() {
 if (document)
   $(document).ready(NewGuyFormLoad);
 
-/* Multiplayer:
-function TNewGuyForm_ParseSoldResponse(body) {
-  if ((LowerCase(Split(body,0)) == 'ok')) {
-    MainForm.SetPasskey(Split(body,1));
-    MainForm.SetLogin(GetAccount);
-    MainForm.SetPassword(GetPassword);
-    ModalResult = mrOk;
-  } else {
-    ShowMessage(body);
-  }
-}
-
-function TNewGuyForm_GetAccount() {
-  return Account.Visible ? Account.Text : '';
-}
-
-function TNewGuyForm_GetPassword() {
-  return (Password.Visible) ? Password.Text : '';
-}
-
-function TNewGuyForm_SoldClick() {
-  if (MainForm.GetHostAddr == '') {
-    ModalResult = mrOk;
-  } else {
-    try {
-      Screen.Cursor = crHourglass;
-      try {
-        if ((MainForm.Label8.Tag && 16) == 0
-       ) url = MainForm.GetHostAddr
-        else url = 'http://www.progressquest.com/create.php?';
-        // url = StringReplace(url, '.com/', '.com/dev/', []);
-        if ((GetAccount() != '') || (GetPassword != ''))
-          url = StuffString(url, 8, 0, GetAccount() + ':' + GetPassword() + '@');
-        args = 'cmd=create' +
-                '&name=' + escape(Name.Text) +
-                '&realm=' + escape(MainForm.GetHostName) +
-                RevString;
-        ParseSoldResponse(DownloadString(url + args));
-      } catch (EWebError) {
-        ShowMessage('Error connecting to server');
-      }
-    } finally {
-      Screen.Cursor = crDefault;
-    }
-  }
-}
-*/
 
 function sold() {
   var newguy = {
@@ -191,15 +144,6 @@ function sold() {
     ]
   };
 
-/*
-  if ($("#multiplayer:checked").length > 0) {
-    newguy.online = {
-      realm: "Alpaquil",
-      host: "http://progressquest.com/alpa.php",
-    }
-  }
-*/
-
   if (document) {
     newguy.Traits.Name = $("#Name").val();
     newguy.Traits.Race = $("input:radio[name=Race]:checked").val();
@@ -214,10 +158,43 @@ function sold() {
   newguy.Equips.Weapon = newguy.bestequip;
   newguy.Equips.Hauberk = "-3 Burlap";
 
-  storage.addToRoster(newguy, function () {
-    window.location.href = "main.html#" + escape(newguy.Traits.Name);
-  });
 
+  if ($("#multiplayer:checked").length > 0) {
+    newguy.online = {
+      realm: "Alpaquil",
+      // host: "http://progressquest.com/alpaquil.php?",
+      host: "http://localhost:9001/alpaquil.php?",
+    }
+
+    $("#sold").prop("disabled", true);
+    $("body").css("cursor", "progress");
+
+    let url = newguy.online.host;
+    url += 'cmd=create' +
+           '&name=' + UrlEncode(newguy.Traits.Name) +
+           '&realm=' + UrlEncode(newguy.online.realm) +
+           RevString;
+    $.ajax(url)
+    .done(body => {
+      if (body.split('|')[0].toLowerCase() == 'ok') {
+         newguy.online.passkey = body.split('|')[1];
+         charIsBorn(newguy);
+      } else {
+        $("#sold").prop("disabled", false);
+        $("body").css("cursor", "default");
+        alert(body);
+      }
+    });
+  } else {
+    charIsBorn(newguy);
+  }
+}
+
+
+function charIsBorn(newguy) {
+  storage.addToRoster(newguy, function () {
+    window.location.href = "main.html#" + UrlEncode(newguy.Traits.Name);
+  });
 }
 
 function cancel() {
