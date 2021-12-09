@@ -1174,6 +1174,19 @@ function LFSR(pt, salt) {
   return result;
 }
 
+function StandardizeUrl(url) {
+  // This shit fucks up some special characters. JQuery is going to do this anyway so
+  // we need it standardized before we compute a validator.
+  let a = document.createElement('a');
+  a.href = url;
+  return a.href;
+  // TODO we could probably remove all those UrlEncode's before this is called
+}
+
+function Validator(url) {
+  url = url.substr(url.indexOf("cmd="));
+  return IntToStr(LFSR(url, game.online.passkey));
+}
 
 function Brag(trigger, andSeeIt) {
   SaveGame();
@@ -1185,7 +1198,7 @@ function Brag(trigger, andSeeIt) {
     //     alert(data.alert);
     // }, "json");
 
-    let url = 'cmd=b&t=' + trigger;
+    let url = game.online.host + 'cmd=b&t=' + trigger;
     for (trait in game.Traits) {
       url += '&' + LowerCase(trait.substr(0,1)) + '=' + UrlEncode(game.Traits[trait]);
     }
@@ -1197,12 +1210,10 @@ function Brag(trigger, andSeeIt) {
     url += '&a=' + UrlEncode(game.bestplot);
     url += '&h=' + UrlEncode(game.online.realm);
     url += RevString;
-    let validator = LFSR(url, game.online.passkey);
-    console.log("val", url, validator);
-    url += '&p=' + IntToStr(validator);
+    url = StandardizeUrl(url);
+    url += '&p=' + Validator(url);
     url += '&m=' + UrlEncode(game.motto || '');
 
-    url = game.online.host + url;
     $.ajax(url)
     .then(body => {
       if (LowerCase(Split(body,0)) == 'report') {
@@ -1221,16 +1232,16 @@ function Guildify(guild) {
 
   game.guild = guild;
 
-  let url = 'cmd=guild';
+  let url = game.online.host + 'cmd=guild';
   for (trait in game.Traits) {
     url += '&' + LowerCase(trait.substr(0,1)) + '=' + UrlEncode(game.Traits[trait]);
   }
   url += '&h=' + UrlEncode(game.online.realm);
   url += RevString;
   url += '&guild=' + UrlEncode(game.guild);
-  url += '&p=' + IntToStr(LFSR(url, game.online.passkey));
+  url = StandardizeUrl(url);
+  url += '&p=' + Validator(url);
 
-  url = game.online.host + url;
   $.ajax(url)
   .then(body => {
     let parts = body.split('|');
