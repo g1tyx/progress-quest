@@ -193,7 +193,7 @@ function sold() {
 
 function charIsBorn(newguy) {
   storage.addToRoster(newguy, function () {
-    window.location.href = "main.html#" + UrlEncode(newguy.Traits.Name);
+    window.location.href = "main.html#" + newguy.Traits.Name;
   });
 }
 
