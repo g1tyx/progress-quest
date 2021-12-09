@@ -1,22 +1,32 @@
 // Copyright (c)2002-2010 Eric Fredricksen <e@fredricksen.net> all rights reserved
 
 var game = {};
-var lasttick, timerid;
+var clock;
 
 function timeGetTime() {
   return new Date().getTime();
 }
 
 function StartTimer() {
-  if (!timerid) {
-    lasttick = timeGetTime();
-    timerid = setTimeout(Timer1Timer, 100);
+  if (!clock) {
+    clock = new Worker('clock.js');
+    clock.addEventListener('message', e => {
+      Timer1Timer();
+      clock.lasttick = timeGetTime();
+    });
+  }
+  if (!clock.running) {
+    clock.lasttick = timeGetTime();
+    clock.running = true;
+    clock.postMessage('start');
   }
 }
 
 function StopTimer() {
-  clearTimeout(timerid);
-  timerid = null;
+  if (clock) {
+    clock.postMessage('stop');
+    clock.running = false;
+  }
 }
 
 function Q(s) {
@@ -878,7 +888,6 @@ function Pos(needle, haystack) {
 var dealing = false;
 
 function Timer1Timer() {
-  timerid = null;  // Event has fired
   if (TaskBar.done()) {
     game.tasks += 1;
     game.elapsed += TaskBar.Max().div(1000);
@@ -916,7 +925,7 @@ function Timer1Timer() {
 
     Dequeue();
   } else {
-    var elapsed = timeGetTime() - lasttick;
+    var elapsed = timeGetTime() - clock.lasttick;
     if (elapsed > 100) elapsed = 100;
     if (elapsed < 0) elapsed = 0;
     TaskBar.increment(elapsed);
@@ -1136,7 +1145,7 @@ function FormKeyDown(e) {
   }
 
   if (key === 'p') {
-    if (timerid) {
+    if (clock && clock.running) {
       $('#paused').css('display', 'block');
       StopTimer();
     } else {
