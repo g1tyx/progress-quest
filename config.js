@@ -256,8 +256,9 @@ storage.loadRoster = function (callback) {
         // aight
       }
     }
-    storage.games = value || {};
-    callback(storage.games);
+    value = value || {};
+    callback(value);
+    storage.games = value;
   }
   this.getItem("roster", gotItem);
 }
@@ -288,15 +289,10 @@ storage.storeRoster = function (roster, callback) {
 }
 
 storage.addToRoster = function (newguy, callback) {
-  if (this.games) {
-    this.games[newguy.Traits.Name] = newguy;
-    this.storeRoster(this.games, callback);
-  } else {
-    this.loadRoster(function () {
-      if (storage.games)  // should always be true
-        storage.addToRoster(newguy, callback);
-    });
-  }
+  this.loadRoster(function (games) {
+    games[newguy.Traits.Name] = newguy;
+    storage.storeRoster(games, callback);
+  });
 }
 
 Number.prototype.div = function (divisor) {
