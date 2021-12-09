@@ -162,8 +162,8 @@ function sold() {
   if ($("#multiplayer:checked").length > 0) {
     newguy.online = {
       realm: "Alpaquil",
-      // host: "http://progressquest.com/alpaquil.php?",
-      host: "http://localhost:9001/alpaquil.php?",
+      host: "http://progressquest.com/alpaquil.php?",
+      // host: "http://localhost:9001/alpaquil.php?",
     }
 
     $("#sold").prop("disabled", true);
@@ -177,7 +177,7 @@ function sold() {
     $.ajax(url)
     .done(body => {
       if (body.split('|')[0].toLowerCase() == 'ok') {
-         newguy.online.passkey = body.split('|')[1];
+         newguy.online.passkey = parseInt(body.split('|')[1]);
          charIsBorn(newguy);
       } else {
         $("#sold").prop("disabled", false);

@@ -777,7 +777,7 @@ function CompleteAct() {
     WinEquip();
   }
 
-  Brag('act');
+  Brag('a');
 }
 
 
@@ -854,7 +854,7 @@ function LevelUp() {
   WinStat();
   WinSpell();
   ExpBar.reset(LevelUpTime(GetI(Traits,'Level')));
-  Brag('level');
+  Brag('l');
 }
 
 function ClearAllSelections() {
@@ -1068,7 +1068,7 @@ function LoadGame(sheet) {
   });
   Log('Loaded game: ' + game.Traits.Name);
   if (!game.elapsed)
-    Brag('start');
+    Brag('s');
   StartTimer();
 }
 
@@ -1083,8 +1083,7 @@ function GameSaveName() {
 
 
 function InputBox(message, def) {
-  var i = prompt(message, def || '');
-  return (i !== null) ? i : def;
+  return prompt(message, def || '');
 }
 
 function ToDna(s) {
@@ -1120,18 +1119,19 @@ function FormKeyDown(e) {
 
   if (game.online) {
     if (key === 'b') {
-      Brag('brag');
-      // Navigate(game.online.host + 'name=' + UrlEncode(Get(Traits,'Name')));
+      Brag('b', true);
     }
 
     if (key === 'g') {
-      game.guild = InputBox('Choose a guild.\n\nMake sure you undestand the guild rules before you join one. To learn more about guilds, visit http://progressquest.com/guilds.php\n', game.guild);
-      Brag("guild");
+      Guildify(InputBox('Choose a guild.\n\nMake sure you undestand the guild rules before you join one. To learn more about guilds, visit http://progressquest.com/guilds.php\n', game.guild));
     }
 
     if (key === 'm') {
-      game.motto = InputBox('Declare your motto!', game.motto);
-      Brag('motto');
+      let mot = InputBox('Declare your motto!', game.motto);
+      if (mot !== null) {
+        game.motto = mot;
+        Brag('m', true);
+      }
     }
   }
 
@@ -1167,14 +1167,15 @@ function Navigate(url) {
 
 function LFSR(pt, salt) {
   var result = salt;
-  for (var k = 1; k <= Length(pt); ++k)
-    result = pt.charCodeAt(k) ^ (result << 1) ^ (1 && ((result >> 31) ^ (result >> 5)));
-  for (var kk = 1; kk <= 10; ++kk)
-    result = (result << 1) ^ (1 && ((result >> 31) ^ (result >> 5)));
+  for (var k = 0; k < pt.length; ++k)
+    result = (result << 1) ^ (1 & ((result >> 31) ^ (result >> 5))) ^ pt.charCodeAt(k);
+  for (var kk = 0; kk < 10; ++kk)
+    result = (result << 1) ^ (1 & ((result >> 31) ^ (result >> 5)));
   return result;
 }
 
-function Brag(trigger) {
+
+function Brag(trigger, andSeeIt) {
   SaveGame();
 
   if (game.online) {
@@ -1184,7 +1185,7 @@ function Brag(trigger) {
     //     alert(data.alert);
     // }, "json");
 
-    let url = game.online.host + 'cmd=b&t=' + trigger;
+    let url = 'cmd=b&t=' + trigger;
     for (trait in game.Traits) {
       url += '&' + LowerCase(trait.substr(0,1)) + '=' + UrlEncode(game.Traits[trait]);
     }
@@ -1196,13 +1197,46 @@ function Brag(trigger) {
     url += '&a=' + UrlEncode(game.bestplot);
     url += '&h=' + UrlEncode(game.online.realm);
     url += RevString;
-    url += '&p=' + IntToStr(LFSR(url, game.online.passkey));
+    let validator = LFSR(url, game.online.passkey);
+    console.log("val", url, validator);
+    url += '&p=' + IntToStr(validator);
     url += '&m=' + UrlEncode(game.motto || '');
+
+    url = game.online.host + url;
     $.ajax(url)
     .then(body => {
-      if (LowerCase(Split(body,0)) = 'report') {
-        ShowMessage(Split(body,1));
+      if (LowerCase(Split(body,0)) == 'report') {
+        alert(Split(body,1));
+      } else if (andSeeIt) {
+        Navigate(game.online.host + 'name=' + UrlEncode(Get(Traits,'Name')));
       }
     });
   }
+}
+
+
+function Guildify(guild) {
+  if (!game.online) return;
+  if (guild === null) return;  // input box cancelled
+
+  game.guild = guild;
+
+  let url = 'cmd=guild';
+  for (trait in game.Traits) {
+    url += '&' + LowerCase(trait.substr(0,1)) + '=' + UrlEncode(game.Traits[trait]);
+  }
+  url += '&h=' + UrlEncode(game.online.realm);
+  url += RevString;
+  url += '&guild=' + UrlEncode(game.guild);
+  url += '&p=' + IntToStr(LFSR(url, game.online.passkey));
+
+  url = game.online.host + url;
+  $.ajax(url)
+  .then(body => {
+    let parts = body.split('|');
+    let s = parts.shift();
+    if (s) alert(s);
+    s = parts.shift();
+    if (s) Navigate(s);
+  });
 }
