@@ -990,8 +990,39 @@ function FormCreate() {
 
   var name = unescape(window.location.href.split('#')[1]);
   storage.loadSheet(name, LoadGame);
+
+  if (window.opener) {
+    // Opened as a popup, so go bare style
+    prepPopup();
+  }
 }
 
+function prepPopup() {
+  document.body.classList.add("bare");
+  window.resizeBy($("#main")[0].offsetWidth - window.innerWidth,
+                  $("#main")[0].offsetHeight - window.innerHeight);
+
+  let titlebar = $("#titlebar");
+  let delta;
+
+  titlebar.on("mousedown", e => {
+      delta = {
+          x: e.pageX,
+          y: e.pageY
+      };
+      console.log(delta);
+  });
+
+  $("html").on("mouseup", e => { delta = null; });
+
+  $("html").on("mousemove", e => {
+    if (!e.which) delta = null;
+    if (delta) {
+        window.moveBy(e.pageX - delta.x,
+                      e.pageY - delta.y);
+    }
+  });
+}
 
 
 function pause(msec) {
@@ -1004,7 +1035,13 @@ function pause(msec) {
 
 function quit() {
   $(window).unbind('unload');
-  SaveGame(function () { window.location.href = "roster.html"; });
+  SaveGame(() => {
+    if (window.opener) {
+      window.close();
+    } else {
+      window.location.href = "roster.html";
+    }
+  });
 }
 
 
@@ -1161,6 +1198,20 @@ function FormKeyDown(e) {
   if (key === 's') {
     SaveGame();
     alert('Saved (' + JSON.stringify(game).length + ' bytes).');
+  }
+
+  if (key === 'w') {
+    if (window.opener) return;
+    $(window).unbind('unload');  // we're about to save it anyway
+    SaveGame(() => {
+      let ext = window.open(window.location.href, "Progress Quest",
+        `resizable,width=${$("#main")[0].offsetWidth},height=${$("#main")[0].offsetHeight},popup,location=0`);
+      console.log(ext);
+      if(ext && !ext.closed && typeof ext.closed !== 'undefined') {
+        // popup was apparently not blocked
+        window.location.href = "roster.html";  // this window can go back to the roster
+      }
+    });
   }
 
   /*

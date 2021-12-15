@@ -112,6 +112,10 @@ body {
   margin-top: 1em;
 }
 
+body.bare {
+  background: silver;
+}
+
 div.scroll { 
   overflow: scroll;
   height: 100px;

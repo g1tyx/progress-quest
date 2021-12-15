@@ -60,6 +60,25 @@ div.progress-container:hover div.hint {
   width: 686px; 
 }
 
+body.bare #main.window {
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+/*
+This is goood to get rid of in chrome, but other browsers don't have a sensible
+title bar (on Mac at least)
+*/
+
+body.bare #titlebar {
+  display: none;
+}
+
+_::-webkit-full-page-media, _:future, :root body.bare #titlebar {
+  display: block;
+}
+
+
 #Trats, 
 #Plots,  #Plots table,
 #Quests, #Quests table { 
