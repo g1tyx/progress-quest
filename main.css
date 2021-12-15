@@ -65,16 +65,15 @@ body.bare #main.window {
   left: 0;
   top: 0;
 }
-/*
-This is goood to get rid of in chrome, but other browsers don't have a sensible
-title bar (on Mac at least)
-*/
+
 
 body.bare #titlebar {
   display: none;
 }
 
 _::-webkit-full-page-media, _:future, :root body.bare #titlebar {
+/* This hack means "safari only". Safari doesn't display the title in the title bar
+so we need ours */
   display: block;
 }
 
