@@ -1156,12 +1156,28 @@ function ToDna(s) {
   return r;
 }
 
+window.onerror = function(message, source, lineno, colno, error) {
+  $("#bsod_message").text(message);
+  $("#bsod_source").text(source);
+  $("#bsod_lineno").text(lineno);
+  $("#bsod_colno").text(colno);
+  $("#bsod_error").text(error.stack);
+
+  $("#bsodmom").show();
+};
+
 function FormKeyDown(e) {
+  $("#bsodmom").hide();
+
   var key = String.fromCharCode(e.which);
 
   if (key === 'd') {
     alert("Your character's genome is " + ToDna(game.dna + ""));
   }
+
+  // if (key === 'e') {
+  //   simulateanerror();
+  // }
 
   if (game.online) {
     if (key === 'b') {
