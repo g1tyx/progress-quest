@@ -43,7 +43,7 @@ fieldset table td {
 }
 
 #races, #classes {
-  height: 372px;
+  height: 385px;
 }
 
 #stats, #gametype {
@@ -54,7 +54,7 @@ fieldset table td {
 }
 #gametype {
   margin-top: 4px;
-  height: 58px;
+  height: 71px;
 }
 
 .window#newguy .vbox button {
