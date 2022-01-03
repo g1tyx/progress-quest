@@ -7,6 +7,37 @@ function load() {
   }
 
   storage.loadRoster(loadGames);
+
+  window.addEventListener("dragover", e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+  });
+  window.addEventListener("drop", e => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    let files = e.dataTransfer.files;
+    for (let i = 0; i < files.length; i++) {
+      files[i].text().then(sheet => {
+        try {
+          sheet = sheet.replace(/\s/g, "");
+          sheet = atob(sheet);
+          sheet = JSON.parse(sheet);
+          storage.loadRoster(games => {
+            if (!games[sheet.Traits.Name] ||
+                confirm(`A character named ${sheet.Traits.Name} already exists. Overwrite it?`)) {
+              storage.addToRoster(sheet, () => storage.loadRoster(loadGames));
+            }
+          });
+        } catch(err) {
+          console.log(err);
+          setTimeout(() => alert("Invalid character data", 1));
+        }
+
+      });
+    }
+
+  });
+
 }
 
 function loadGames(games) {
@@ -38,14 +69,31 @@ function loadGames(games) {
       // TODO: put in a window or whatev
     });
 
+    br.find("a.save").attr("href",
+      `data:text/plain;name=${name}.pqw,${btoa(JSON.stringify(c))}`);
+    br.find("a.save").attr("download", `${name}.pqw`);
+
     if (name === newone)
       br.addClass("lit");
 
-    /*
-      var p = $("<p style='font:6pt verdana'/>");
-      p.appendTo(roster);
-      p.text(JSON.stringify(c));
-      */
+    br.click(e => {
+      if (e.altKey) {
+        let text = btoa(JSON.stringify(c));
+        text = text.match(/.{1,80}/g).join('\n');
+        $("dialog#copy pre").text(text);
+        $("dialog#copy span").text(name);
+         sel = window.getSelection();
+         window.setTimeout(() => {
+          let range = document.createRange();
+          range.selectNodeContents($("dialog#copy pre")[0]);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }, 1);
+        $("dialog#copy")[0].showModal();
+        // window.prompt("Copy to clipboard", text);
+      }
+    });
+    br.find("a.go").attr("data-downloadurl", `text/plain:${name}.pqw:data:text/plain,${btoa(JSON.stringify(c))}`);
 
     ++count;
   });
@@ -77,10 +125,6 @@ $(document).ready(function () {
 
   $("#roll").click(function () {
     window.location = "newguy.html";
-  });
-
-  $("#roll").click(function () {
-    window.location = "newguy.html?online";
   });
 
   $("#test").click(function () {
