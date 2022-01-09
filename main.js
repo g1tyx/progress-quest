@@ -161,12 +161,12 @@ function InterplotCinematic() {
     break;
   case 2:
     var nemesis2 = ImpressiveGuy();
-    Q("task|2|Oh sweet relief! You've reached the protection of the good " + nemesis2);
+    Q("task|2|Oh sweet relief! You've reached the kind protection of " + nemesis2);
     Q('task|3|There is rejoicing, and an unnerving encouter with ' + nemesis2 + ' in private');
     Q('task|2|You forget your ' + BoringItem() + ' and go back to get it');
     Q("task|2|What's this!? You overhear something shocking!");
     Q('task|2|Could ' + nemesis2 + ' be a dirty double-dealer?');
-    Q('task|3|Who can possibly be trusted with this news!? ... Oh yes, of course');
+    Q('task|3|Who can possibly be trusted with this news!? -- Oh yes, of course');
     break;
   }
   Q('plot|1|Loading');
@@ -195,8 +195,11 @@ function NamedMonster(level) {
 }
 
 function ImpressiveGuy() {
-  return Pick(K.ImpressiveTitles) +
-    (Random(2) ? ' of the ' + Pick(K.Races) : ' of ' + GenerateName());
+  if (Random(2)) {
+    return 'the ' + Pick(K.ImpressiveTitles) + ' of the ' + Plural(Split(Pick(K.Races), 0));
+  } else {
+    return Pick(K.ImpressiveTitles) + ' ' + GenerateName() + ' of ' + GenerateName();
+  }
 }
 
 function MonsterTask(level) {

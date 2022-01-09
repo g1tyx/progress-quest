@@ -1004,5 +1004,8 @@ K.ImpressiveTitles = [
   "Princess",
   "Chief",
   "Boss",
-  "Archbishop"];
+  "Archbishop",
+  "Chancellor",
+  "Baroness",
+  "Inquistor"];
 
