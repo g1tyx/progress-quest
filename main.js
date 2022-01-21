@@ -1172,26 +1172,20 @@ window.onerror = function(message, source, lineno, colno, error) {
 function FormKeyDown(e) {
   $("#bsodmom").hide();
 
-  var key = String.fromCharCode(e.which);
-
-  if (key === 'd') {
+  if (e.key === 'd') {
     alert("Your character's genome is " + ToDna(game.dna + ""));
   }
 
-  // if (key === 'e') {
-  //   simulateanerror();
-  // }
-
   if (game.online) {
-    if (key === 'b') {
+    if (e.key === 'b') {
       Brag('b', true);
     }
 
-    if (key === 'g') {
+    if (e.key === 'g') {
       Guildify(InputBox('Choose a guild.\n\nMake sure you undestand the guild rules before you join one. To learn more about guilds, visit http://progressquest.com/guilds.php\n', game.guild));
     }
 
-    if (key === 'm') {
+    if (e.key === 'm') {
       let mot = InputBox('Declare your motto!', game.motto);
       if (mot !== null) {
         game.motto = mot;
@@ -1200,7 +1194,7 @@ function FormKeyDown(e) {
     }
   }
 
-  if (key === 'p') {
+  if (e.key === 'p') {
     if (clock && clock.running) {
       $('#paused').css('display', 'block');
       StopTimer();
@@ -1210,16 +1204,16 @@ function FormKeyDown(e) {
     }
   }
 
-  if (key === 'q') {
+  if (e.key === 'q') {
     quit();
   }
 
-  if (key === 's') {
+  if (e.key === 's') {
     SaveGame();
     alert('Saved (' + JSON.stringify(game).length + ' bytes).');
   }
 
-  if (key === 'w') {
+  if (e.key === 'w') {
     if (window.opener) return;
     $(window).unbind('unload');  // we're about to save it anyway
     SaveGame(() => {
@@ -1234,7 +1228,7 @@ function FormKeyDown(e) {
   }
 
   /*
-  if (key === 't') {
+  if (e.key === 't') {
     TaskBar.reposition(TaskBar.Max());
   }
   */
