@@ -1,4 +1,13 @@
 
+function b64_decode(value) {
+  return JSON.parse(decodeURIComponent(escape(atob(value))));
+}
+
+function b64_stringify(value) {
+   return btoa(unescape(encodeURIComponent(JSON.stringify(value))));
+}
+
+
 function load() {
 
   if (!window.localStorage) {
@@ -20,8 +29,7 @@ function load() {
       files[i].text().then(sheet => {
         try {
           sheet = sheet.replace(/\s/g, "");
-          sheet = atob(sheet);
-          sheet = JSON.parse(sheet);
+          sheet = b64_decode(sheet);
           storage.loadRoster(games => {
             if (!games[sheet.Traits.Name] ||
                 confirm(`A character named ${sheet.Traits.Name} already exists. Overwrite it?`)) {
@@ -70,7 +78,7 @@ function loadGames(games) {
     });
 
     br.find("a.save").attr("href",
-      `data:text/plain;name=${name}.pqw,${btoa(JSON.stringify(c))}`);
+      `data:text/plain;name=${name}.pqw,${b64_stringify(c)}`);
     br.find("a.save").attr("download", `${name}.pqw`);
 
     if (name === newone)
@@ -78,7 +86,7 @@ function loadGames(games) {
 
     br.click(e => {
       if (e.altKey) {
-        let text = btoa(JSON.stringify(c));
+        let text = b64_stringify(c);
         text = text.match(/.{1,80}/g).join('\n');
         $("dialog#copy pre").text(text);
         $("dialog#copy span").text(name);
@@ -93,7 +101,7 @@ function loadGames(games) {
         // window.prompt("Copy to clipboard", text);
       }
     });
-    br.find("a.go").attr("data-downloadurl", `text/plain:${name}.pqw:data:text/plain,${btoa(JSON.stringify(c))}`);
+    br.find("a.go").attr("data-downloadurl", `text/plain:${name}.pqw:data:text/plain,${b64_stringify(c)}`);
 
     ++count;
   });
