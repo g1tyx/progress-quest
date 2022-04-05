@@ -660,7 +660,7 @@ function WinItem() {
 }
 
 function CompleteQuest() {
-  QuestBar.reset(50 + RandomLow(1000));
+  QuestBar.reset(50 + Random(100));
   if (Quests.length()) {
     Log('Quest completed: ' + game.bestquest);
     Quests.CheckAll();
