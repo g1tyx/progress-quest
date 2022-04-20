@@ -630,11 +630,11 @@ function WinStat() {
   } else {
     // Favor the best stat so it will tend to clump
     var t = 0;
-    $.each(K.Stats, function (index, key) {
+    $.each(K.PrimeStats, function (index, key) {
       t += Square(GetI(Stats, key));
     });
     t = Random(t);
-    $.each(K.Stats, function (index, key) {
+    $.each(K.PrimeStats, function (index, key) {
       i = key;
       t -= Square(GetI(Stats, key));
       if (t < 0) return false;
